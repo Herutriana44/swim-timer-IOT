@@ -73,7 +73,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   msg.trim();
   Serial.println("Dari MQTT: " + msg);
 
-  if (msg == "start") {
+  if (msg == "start1") {
     systemActive = true;
     irDetected = false;
     detectionTime = 0;
@@ -98,7 +98,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void reconnect() {
   if (!client.connected()) {
     lcd.clear(); lcd.print("MQTT Connect...");
-    if (client.connect("ESP32_FINISH95_SHAFA234")) {
+    if (client.connect("ESP32_LANE1_STOP")) {
       client.subscribe(mqtt_topic);
       lcd.clear(); lcd.print("MQTT Connected!");
       Serial.println("Terhubung MQTT & Subscribed!");
@@ -222,7 +222,7 @@ void loop() {
         digitalWrite(ledHijau, HIGH);
         digitalWrite(ledMerah, LOW);
 
-        client.publish(mqtt_topic, "stop");
+        client.publish(mqtt_topic, "stop1");
 
         lcd.clear();
         lcd.setCursor(0,0); lcd.print("Finish!");
@@ -239,5 +239,5 @@ void loop() {
   // Auto-reset setelah 10 detik
   if (irDetected && millis() - detectionTime >= 10000) {
     resetSystem();
-  }
+  }
 }

@@ -17,8 +17,8 @@ PubSubClient client(timerUnsika3);
 LiquidCrystal_I2C lcd(0x27, 16, 2);   // Sesuaikan alamat I2C LCD kamu
 
 // Ultrasonik
-#define trigPin 17
-#define echoPin 16
+#define trigPin 16
+#define echoPin 17
 
 // LED
 #define ledMerah 5
@@ -103,7 +103,7 @@ void reconnect() {
     lcd.print("MQTT Connect...");
     Serial.print("MQTT Connect...");
 
-    if (client.connect("ESP32_START_SHAFA")) {
+    if (client.connect("ESP32_LANE1_START")) {
       Serial.println(" Terhubung!");
       lcd.clear();
       lcd.setCursor(0,0);
@@ -130,7 +130,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   message.trim();
 
-  if (message == "stop2") {
+  if (message == "stop1") {
     alreadyStarted = false;
     finishedFlag = true;   
 
@@ -174,7 +174,7 @@ void loop() {
       lcd.print("cm");
 
       if (distance > 60 && !alreadyStarted && !finishedFlag) {
-        client.publish(mqtt_topic, "start2");
+        client.publish(mqtt_topic, "start1");
         Serial.println("START dikirim!");
         alreadyStarted = true;
 

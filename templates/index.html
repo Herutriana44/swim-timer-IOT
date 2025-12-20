@@ -29,21 +29,49 @@
             padding: 40px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             text-align: center;
-            max-width: 600px;
+            max-width: 1200px;
             width: 90%;
+        }
+
+        .lanes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .lane-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .lane-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #FFD700;
         }
 
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
         .timer-display {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: bold;
             font-family: 'Courier New', monospace;
-            margin: 30px 0;
+            margin: 20px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             background: rgba(0, 0, 0, 0.2);
             padding: 20px;
@@ -101,6 +129,53 @@
             font-family: 'Courier New', monospace;
         }
 
+        .checkpoint-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .checkpoint-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .checkpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkpoint-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .checkpoint-label {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .checkpoint-value {
+            display: block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #4CAF50;
+        }
+
+        .checkpoint-value.empty {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
         .reset-btn {
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -111,10 +186,28 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 20px;
+            margin-right: 10px;
         }
 
         .reset-btn:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .reset-btn-lane {
+            background: rgba(255, 193, 7, 0.3);
+            border: 2px solid rgba(255, 193, 7, 0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .reset-btn-lane:hover {
+            background: rgba(255, 193, 7, 0.5);
             transform: translateY(-2px);
         }
 
@@ -145,6 +238,23 @@
                 font-size: 2rem;
             }
 
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .lanes-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .lane-card {
+                padding: 20px;
+            }
+
+            .lane-title {
+                font-size: 1.5rem;
+            }
+
             .timer-display {
                 font-size: 2.5rem;
             }
@@ -164,58 +274,252 @@
 
     <div class="container">
         <h1>🏊‍♂️ Swim Timer</h1>
+        <div class="subtitle">2 Lintasan - Real Time Display</div>
 
-        <div class="timer-display" id="timerDisplay">
-            00:00:00
-        </div>
+        <div class="lanes-container">
+            <!-- Lintasan 1 -->
+            <div class="lane-card">
+                <div class="lane-title">🏊 Lintasan 1</div>
+                
+                <div class="timer-display" id="timerDisplay1">
+                    00:00:00
+                </div>
 
-        <div class="status" id="statusDisplay">
-            Menunggu Start...
-        </div>
+                <div class="status" id="statusDisplay1">
+                    Menunggu Start...
+                </div>
 
-        <div class="lap-info">
-            <div class="lap-item">
-                <h3>Lap Count</h3>
-                <div class="value" id="lapCount">0</div>
+                <div class="lap-info">
+                    <div class="lap-item">
+                        <h3>Lap Count</h3>
+                        <div class="value" id="lapCount1">0</div>
+                    </div>
+                    <div class="lap-item">
+                        <h3>Last Lap Time</h3>
+                        <div class="value" id="lapTime1">--:--:--</div>
+                    </div>
+                </div>
+
+                <!-- Checkpoint Times -->
+                <div class="checkpoint-section">
+                    <h3 class="checkpoint-title">⏱️ Waktu Checkpoint</h3>
+                    <div class="checkpoint-grid" id="checkpointGrid1">
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">10m:</span>
+                            <span class="checkpoint-value" id="checkpoint1_10m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">20m:</span>
+                            <span class="checkpoint-value" id="checkpoint1_20m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">30m:</span>
+                            <span class="checkpoint-value" id="checkpoint1_30m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">40m:</span>
+                            <span class="checkpoint-value" id="checkpoint1_40m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">50m:</span>
+                            <span class="checkpoint-value" id="checkpoint1_50m">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="reset-btn-lane" onclick="resetTimerLane(1)">
+                    🔄 Reset Lintasan 1
+                </button>
             </div>
-            <div class="lap-item">
-                <h3>Last Lap Time</h3>
-                <div class="value" id="lapTime">--:--:--</div>
+
+            <!-- Lintasan 2 -->
+            <div class="lane-card">
+                <div class="lane-title">🏊 Lintasan 2</div>
+                
+                <div class="timer-display" id="timerDisplay2">
+                    00:00:00
+                </div>
+
+                <div class="status" id="statusDisplay2">
+                    Menunggu Start...
+                </div>
+
+                <div class="lap-info">
+                    <div class="lap-item">
+                        <h3>Lap Count</h3>
+                        <div class="value" id="lapCount2">0</div>
+                    </div>
+                    <div class="lap-item">
+                        <h3>Last Lap Time</h3>
+                        <div class="value" id="lapTime2">--:--:--</div>
+                    </div>
+                </div>
+
+                <!-- Checkpoint Times -->
+                <div class="checkpoint-section">
+                    <h3 class="checkpoint-title">⏱️ Waktu Checkpoint</h3>
+                    <div class="checkpoint-grid" id="checkpointGrid2">
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">10m:</span>
+                            <span class="checkpoint-value" id="checkpoint2_10m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">20m:</span>
+                            <span class="checkpoint-value" id="checkpoint2_20m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">30m:</span>
+                            <span class="checkpoint-value" id="checkpoint2_30m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">40m:</span>
+                            <span class="checkpoint-value" id="checkpoint2_40m">-</span>
+                        </div>
+                        <div class="checkpoint-item">
+                            <span class="checkpoint-label">50m:</span>
+                            <span class="checkpoint-value" id="checkpoint2_50m">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="reset-btn-lane" onclick="resetTimerLane(2)">
+                    🔄 Reset Lintasan 2
+                </button>
             </div>
         </div>
 
         <button class="reset-btn" onclick="resetTimer()">
-            🔄 Reset Timer
+            🔄 Reset Semua Timer
         </button>
     </div>
 
     <script>
         let isConnected = false;
         let lastUpdateTime = 0;
+        
+        // Suppress browser extension errors (bukan dari kode kita)
+        // Error ini muncul dari browser extension yang mencoba berkomunikasi dengan background script
+        if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.lastError) {
+            // Suppress error dari browser extension
+            try {
+                chrome.runtime.lastError;
+            } catch(e) {
+                // Ignore extension errors
+            }
+        }
 
         function updateTimer() {
             fetch('/api/timer')
-                .then(response => response.json())
-                .then(data => {
-                    // Update timer display
-                    document.getElementById('timerDisplay').textContent = data.time;
-
-                    // Update status
-                    const statusDisplay = document.getElementById('statusDisplay');
-                    if (data.running) {
-                        statusDisplay.textContent = '⏱️ Timer Berjalan';
-                        statusDisplay.className = 'status running';
-                    } else if (data.time !== '0:00:00') {
-                        statusDisplay.textContent = '🏁 Timer Selesai';
-                        statusDisplay.className = 'status stopped';
-                    } else {
-                        statusDisplay.textContent = '⏳ Menunggu Start...';
-                        statusDisplay.className = 'status waiting';
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
+                    return response.json();
+                })
+                .then(data => {
+                    // Debug: log data yang diterima
+                    console.log('📥 Data dari API:', data);
+                    
+                    // Update untuk kedua lintasan
+                    for (let laneNum = 1; laneNum <= 2; laneNum++) {
+                        const laneKey = `lane_${laneNum}`;
+                        const laneData = data[laneKey];
+                        
+                        if (laneData) {
+                            // Update timer display
+                            document.getElementById(`timerDisplay${laneNum}`).textContent = laneData.time || '00:00:00';
 
-                    // Update lap info
-                    document.getElementById('lapCount').textContent = data.lap_count;
-                    document.getElementById('lapTime').textContent = data.lap_time || '--:--:--';
+                            // Update status
+                            const statusDisplay = document.getElementById(`statusDisplay${laneNum}`);
+                            if (laneData.running) {
+                                statusDisplay.textContent = '⏱️ Timer Berjalan';
+                                statusDisplay.className = 'status running';
+                            } else if (laneData.finished || (laneData.time && laneData.time !== '0:00:00' && laneData.time !== '00:00:00')) {
+                                statusDisplay.textContent = '🏁 Timer Selesai';
+                                statusDisplay.className = 'status stopped';
+                            } else {
+                                statusDisplay.textContent = '⏳ Menunggu Start...';
+                                statusDisplay.className = 'status waiting';
+                            }
+
+                            // Update lap info
+                            document.getElementById(`lapCount${laneNum}`).textContent = laneData.lap_count || 0;
+                            document.getElementById(`lapTime${laneNum}`).textContent = laneData.lap_time || '--:--:--';
+
+                            // Update checkpoint times
+                            const checkpointDistances = [10, 20, 30, 40, 50];
+                            
+                            // Selalu update semua checkpoint, bahkan jika checkpoint_times tidak ada
+                            checkpointDistances.forEach(distance => {
+                                const checkpointElement = document.getElementById(`checkpoint${laneNum}_${distance}m`);
+                                if (!checkpointElement) {
+                                    console.error(`❌ Element checkpoint${laneNum}_${distance}m tidak ditemukan!`);
+                                    return;
+                                }
+                                
+                                // Cek apakah checkpoint_times ada
+                                if (laneData.checkpoint_times && typeof laneData.checkpoint_times === 'object') {
+                                    const checkpointData = laneData.checkpoint_times[distance];
+                                    
+                                    // Debug logging (hanya untuk checkpoint yang ada)
+                                    if (checkpointData) {
+                                        console.log(`  Checkpoint ${distance}m data:`, checkpointData);
+                                    }
+                                    
+                                    // Cek apakah checkpoint data ada dan valid
+                                    if (checkpointData && typeof checkpointData === 'object') {
+                                        // Format: {time: number, display: string}
+                                        const timeValue = checkpointData.time;
+                                        const displayText = checkpointData.display;
+                                        
+                                        if (timeValue !== null && timeValue !== undefined && timeValue !== '' && !isNaN(timeValue) && timeValue > 0) {
+                                            // Ada waktu checkpoint yang valid
+                                            const finalDisplay = displayText || `${parseFloat(timeValue).toFixed(2)}s`;
+                                            checkpointElement.textContent = finalDisplay;
+                                            checkpointElement.className = 'checkpoint-value';
+                                            console.log(`  ✅ Updated checkpoint ${distance}m: ${finalDisplay}`);
+                                        } else {
+                                            // Waktu tidak valid
+                                            checkpointElement.textContent = '-';
+                                            checkpointElement.className = 'checkpoint-value empty';
+                                        }
+                                    } else if (checkpointData !== null && checkpointData !== undefined) {
+                                        // Jika checkpointData bukan object, mungkin langsung angka atau string
+                                        const timeValue = typeof checkpointData === 'number' 
+                                            ? checkpointData 
+                                            : parseFloat(checkpointData);
+                                        
+                                        if (!isNaN(timeValue) && timeValue > 0) {
+                                            checkpointElement.textContent = `${timeValue.toFixed(2)}s`;
+                                            checkpointElement.className = 'checkpoint-value';
+                                            console.log(`  ✅ Updated checkpoint ${distance}m: ${timeValue.toFixed(2)}s (direct value)`);
+                                        } else {
+                                            checkpointElement.textContent = '-';
+                                            checkpointElement.className = 'checkpoint-value empty';
+                                        }
+                                    } else {
+                                        // Tidak ada data checkpoint untuk distance ini
+                                        checkpointElement.textContent = '-';
+                                        checkpointElement.className = 'checkpoint-value empty';
+                                    }
+                                } else {
+                                    // checkpoint_times tidak ada atau bukan object
+                                    checkpointElement.textContent = '-';
+                                    checkpointElement.className = 'checkpoint-value empty';
+                                }
+                            });
+                            
+                            // Debug log checkpoint_times jika ada
+                            if (laneData.checkpoint_times) {
+                                console.log(`🔍 Lintasan ${laneNum} checkpoint_times:`, laneData.checkpoint_times);
+                                console.log(`   📊 Checkpoint count dari API: ${laneData.checkpoint_count || 0}`);
+                            } else {
+                                console.warn(`⚠️ Lintasan ${laneNum} tidak memiliki checkpoint_times`);
+                            }
+                        } else {
+                            console.warn(`⚠️ Lintasan ${laneNum} tidak ada dalam data API`);
+                        }
+                    }
 
                     // Update connection status
                     const now = Date.now();
@@ -229,7 +533,10 @@
                     lastUpdateTime = now;
                 })
                 .catch(error => {
-                    console.error('Error fetching timer data:', error);
+                    // Hanya log error yang relevan (bukan dari browser extension)
+                    if (error.message && !error.message.includes('runtime') && !error.message.includes('extension')) {
+                        console.error('Error fetching timer data:', error);
+                    }
                     isConnected = false;
                     updateConnectionStatus(false);
                 });
@@ -252,13 +559,37 @@
             fetch('/api/reset')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Timer reset:', data);
+                    console.log('Semua timer di-reset:', data);
                     updateTimer();
                 })
                 .catch(error => {
                     console.error('Error resetting timer:', error);
                 });
         }
+
+        function resetTimerLane(laneNum) {
+            fetch(`/api/reset/${laneNum}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(`Timer Lintasan ${laneNum} di-reset:`, data);
+                    updateTimer();
+                })
+                .catch(error => {
+                    console.error(`Error resetting timer lintasan ${laneNum}:`, error);
+                });
+        }
+
+        // Suppress console errors dari browser extension
+        const originalError = console.error;
+        console.error = function(...args) {
+            // Filter out browser extension errors
+            const errorMsg = args.join(' ');
+            if (!errorMsg.includes('runtime.lastError') && 
+                !errorMsg.includes('Could not establish connection') &&
+                !errorMsg.includes('message channel closed')) {
+                originalError.apply(console, args);
+            }
+        };
 
         // Update timer setiap 100ms untuk real-time display
         setInterval(updateTimer, 100);

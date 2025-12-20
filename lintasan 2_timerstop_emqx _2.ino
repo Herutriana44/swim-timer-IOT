@@ -15,9 +15,15 @@ PubSubClient client(espClient);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // ================== Pin ===================
-#define ledHijau  19
-#define ledBiru   18
-#define ledMerah  5
+// #define ledHijau  19
+// #define ledBiru   18
+// #define ledMerah  5
+
+// untuk lintasan 2 stop
+#define ledMerah 18
+#define ledHijau 5
+#define ledBiru 19
+
 #define buzzer    15
 
 // UART Ultrasonik Underwater
@@ -73,7 +79,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   msg.trim();
   Serial.println("Dari MQTT: " + msg);
 
-  if (msg == "start") {
+  if (msg == "start2") {
     systemActive = true;
     irDetected = false;
     detectionTime = 0;
@@ -97,12 +103,46 @@ void callback(char* topic, byte* payload, unsigned int length) {
 // ================== Reconnect MQTT ===================
 void reconnect() {
   if (!client.connected()) {
-    lcd.clear(); lcd.print("MQTT Connect...");
-    if (client.connect("ESP32_FINISH95_SHAFA234")) {
+    lcd.clear(); 
+    lcd.setCursor(0,0); 
+    lcd.print("MQTT Connect...");
+    
+    // Pastikan lampu merah menyala saat mencoba koneksi
+    digitalWrite(ledHijau, LOW);
+    digitalWrite(ledBiru, LOW);
+    digitalWrite(ledMerah, HIGH);
+    
+    if (client.connect("ESP32_LANE2_STOP")) {
       client.subscribe(mqtt_topic);
-      lcd.clear(); lcd.print("MQTT Connected!");
+      lcd.clear(); 
+      lcd.setCursor(0,0); 
+      lcd.print("MQTT Connected!");
       Serial.println("Terhubung MQTT & Subscribed!");
+      
+      // Pastikan lampu merah tetap menyala setelah koneksi
+      digitalWrite(ledHijau, LOW);
+      digitalWrite(ledBiru, LOW);
+      digitalWrite(ledMerah, HIGH);
+      
       delay(1000);
+      
+      // Kembali ke status awal setelah koneksi berhasil
+      resetSystem();
+    } else {
+      // Handle jika koneksi gagal - tetap merah
+      digitalWrite(ledHijau, LOW);
+      digitalWrite(ledBiru, LOW);
+      digitalWrite(ledMerah, HIGH);
+      
+      lcd.clear();
+      lcd.setCursor(0,0); 
+      lcd.print("MQTT Failed!");
+      lcd.setCursor(0,1); 
+      lcd.print("Retrying...");
+      Serial.print("MQTT connection failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" Retrying in 5 seconds...");
+      delay(5000);
     }
   }
 }
@@ -112,6 +152,12 @@ void connectWiFi() {
   WiFi.begin(ssid, password);
   lcd.clear();
   lcd.setCursor(0,0); lcd.print("WiFi Connecting");
+  
+  // Pastikan lampu merah menyala saat koneksi WiFi
+  digitalWrite(ledHijau, LOW);
+  digitalWrite(ledBiru, LOW);
+  digitalWrite(ledMerah, HIGH);
+  
   int dot = 0;
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -126,6 +172,12 @@ void connectWiFi() {
   lcd.clear();
   lcd.setCursor(0,0); lcd.print("WiFi Connected!");
   lcd.setCursor(0,1); lcd.print(WiFi.localIP().toString());
+  
+  // Tetap merah setelah WiFi terkoneksi
+  digitalWrite(ledHijau, LOW);
+  digitalWrite(ledBiru, LOW);
+  digitalWrite(ledMerah, HIGH);
+  
   delay(1500);
 }
 
@@ -164,6 +216,11 @@ void setup() {
   pinMode(ledBiru, OUTPUT);
   pinMode(ledMerah, OUTPUT);
   pinMode(buzzer, OUTPUT);
+
+  // Inisialisasi lampu merah menyala sejak awal
+  digitalWrite(ledHijau, LOW);
+  digitalWrite(ledBiru, LOW);
+  digitalWrite(ledMerah, HIGH);
 
   lcd.init();
   lcd.backlight();
@@ -222,7 +279,7 @@ void loop() {
         digitalWrite(ledHijau, HIGH);
         digitalWrite(ledMerah, LOW);
 
-        client.publish(mqtt_topic, "stop");
+        client.publish(mqtt_topic, "stop2");
 
         lcd.clear();
         lcd.setCursor(0,0); lcd.print("Finish!");
@@ -239,5 +296,5 @@ void loop() {
   // Auto-reset setelah 10 detik
   if (irDetected && millis() - detectionTime >= 10000) {
     resetSystem();
-  }
+  }
 }

@@ -25,6 +25,11 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);   // Sesuaikan alamat I2C LCD kamu
 #define ledHijau 18
 #define ledBiru 19
 
+// // untuk lintasan 2 stop
+// #define ledMerah 18
+// #define ledHijau 5
+// #define ledBiru 19
+
 // Buzzer
 #define buzzer 15
 
@@ -103,7 +108,7 @@ void reconnect() {
     lcd.print("MQTT Connect...");
     Serial.print("MQTT Connect...");
 
-    if (client.connect("ESP32_START_SHAFA")) {
+    if (client.connect("ESP32_LANE2_START")) {
       Serial.println(" Terhubung!");
       lcd.clear();
       lcd.setCursor(0,0);

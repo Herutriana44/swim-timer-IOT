@@ -53,6 +53,7 @@ class LaneTimer:
         self.last_lap_time = None
         self.lap_count = 0
         self.finished = False
+        self.checkpoint_times = {}  # {checkpoint_distance: waktu dalam detik}
 
 # Global variables untuk 2 lintasan
 lanes = {
@@ -79,6 +80,10 @@ except ImportError:
 MQTT_TOPIC_LANE1 = getattr(globals(), 'MQTT_TOPIC_LANE1', MQTT_TOPIC)
 MQTT_TOPIC_LANE2 = getattr(globals(), 'MQTT_TOPIC_LANE2', MQTT_TOPIC)
 
+# Topic untuk checkpoint (untuk menerima checkpoint times dari simulasi/deteksi)
+MQTT_TOPIC_CHECKPOINT_LANE1 = MQTT_TOPIC_LANE1.replace("/timer/", "/checkpoint/") if "/timer/" in MQTT_TOPIC_LANE1 else f"{MQTT_TOPIC_LANE1}/checkpoint"
+MQTT_TOPIC_CHECKPOINT_LANE2 = MQTT_TOPIC_LANE2.replace("/timer/", "/checkpoint/") if "/timer/" in MQTT_TOPIC_LANE2 else f"{MQTT_TOPIC_LANE2}/checkpoint"
+
 def on_connect(client, userdata, flags, rc):
     """Callback ketika terhubung ke MQTT broker"""
     print(f"Terhubung ke MQTT broker {MQTT_BROKER} dengan code: {rc}")
@@ -87,8 +92,12 @@ def on_connect(client, userdata, flags, rc):
         # Subscribe ke topic untuk kedua lintasan
         client.subscribe(MQTT_TOPIC_LANE1)
         client.subscribe(MQTT_TOPIC_LANE2)
+        client.subscribe(MQTT_TOPIC_CHECKPOINT_LANE1)
+        client.subscribe(MQTT_TOPIC_CHECKPOINT_LANE2)
         print(f"📡 Subscribed ke topic Lintasan 1: {MQTT_TOPIC_LANE1}")
         print(f"📡 Subscribed ke topic Lintasan 2: {MQTT_TOPIC_LANE2}")
+        print(f"📡 Subscribed ke checkpoint Lintasan 1: {MQTT_TOPIC_CHECKPOINT_LANE1}")
+        print(f"📡 Subscribed ke checkpoint Lintasan 2: {MQTT_TOPIC_CHECKPOINT_LANE2}")
     else:
         print(f"❌ Gagal koneksi MQTT dengan code: {rc}")
 
@@ -202,7 +211,23 @@ def on_message(client, userdata, msg):
         lane.last_lap_time = None
         lane.lap_count = 0
         lane.finished = False
+        lane.checkpoint_times = {}
         print(f"🔄 Lintasan {lane_num} - Timer di-reset manual")
+    
+    # Handle pesan checkpoint dari simulasi/deteksi
+    elif topic == MQTT_TOPIC_CHECKPOINT_LANE1 or topic == MQTT_TOPIC_CHECKPOINT_LANE2:
+        try:
+            checkpoint_data = json.loads(message)
+            checkpoint_lane = checkpoint_data.get('lane', lane_num)
+            checkpoint_distance = checkpoint_data.get('checkpoint')
+            checkpoint_time = checkpoint_data.get('time')
+            
+            if checkpoint_lane in lanes:
+                lane = lanes[checkpoint_lane]
+                lane.checkpoint_times[checkpoint_distance] = checkpoint_time
+                print(f"✅ Checkpoint {checkpoint_distance}m untuk Lintasan {checkpoint_lane}: {checkpoint_time:.2f}s")
+        except json.JSONDecodeError:
+            print(f"⚠️ Error parsing checkpoint data: {message}")
 
 def on_disconnect(client, userdata, rc):
     """Callback ketika terputus dari MQTT broker"""
@@ -261,7 +286,8 @@ def get_timer_data():
             'time': display_time,
             'lap_count': lane.lap_count,
             'lap_time': lap_display,
-            'finished': lane.finished
+            'finished': lane.finished,
+            'checkpoint_times': lane.checkpoint_times
         }
     
     result['broker'] = MQTT_BROKER
@@ -296,6 +322,7 @@ def get_timer_data_lane(lane_num):
         'lap_count': lane.lap_count,
         'lap_time': lap_display,
         'finished': lane.finished,
+        'checkpoint_times': lane.checkpoint_times,
         'broker': MQTT_BROKER
     })
 
@@ -311,6 +338,7 @@ def reset_timer():
         lane.last_lap_time = None
         lane.lap_count = 0
         lane.finished = False
+        lane.checkpoint_times = {}
     
     print("🔄 Semua timer di-reset")
     return jsonify({'status': 'reset', 'lanes': [1, 2]})
@@ -330,6 +358,7 @@ def reset_timer_lane(lane_num):
     lane.last_lap_time = None
     lane.lap_count = 0
     lane.finished = False
+    lane.checkpoint_times = {}
     
     print(f"🔄 Timer Lintasan {lane_num} di-reset")
     return jsonify({'status': 'reset', 'lane': lane_num})
@@ -365,3 +394,4 @@ if __name__ == '__main__':
     
     # Start Flask web server
     app.run(host=WEB_HOST, port=WEB_PORT, debug=WEB_DEBUG)
+
